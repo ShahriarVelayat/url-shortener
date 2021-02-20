@@ -1,0 +1,9 @@
+kind: ExternalService
+name: url-shortner
+spec:
+  image_pull_policy: Always
+  port: 80
+  source:
+    context: .
+    node_version: 12.16.1
+    project_type: nodejs
