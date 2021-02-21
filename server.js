@@ -43,14 +43,15 @@ app.post("/api/shorturl/new", async function (req, res) {
   var exist = await checkExists(req.body.url);
   if (exist) res.json({ shorturl: exist._id });
   else {
-    var data = await new Url({ original_url: req.body.url }).save(
-      (err, doc) => {
-        if (err) console.log(err);
-        return doc;
+    var newUrl = new Url({ original_url: req.body.url });
+    var data = newUrl.save((err, doc) => {
+      if (err) {
+        console.log(err);
+        res.json({ error: err });
       }
-    );
-
-    res.json({ original_url: data.original_url });
+      res.json({ original_url: doc.original_url,short_url:doc._id });
+      return doc;
+    });
   }
 });
 
@@ -63,7 +64,7 @@ async function checkExists(original_url) {
 }
 
 async function find(id) {
-  var data = await Url.findById({ _id:id}, (err, doc) => {
+  var data = await Url.findById({ _id: id }, (err, doc) => {
     if (err) console.log(err);
     return doc;
   });
