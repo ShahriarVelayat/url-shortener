@@ -1,8 +1,8 @@
-POST  http://localhost:4002/api/shorturl/new  HTTP/1.1
+POST  https://url-shortener.shahriarvelaya1.repl.co/api/shorturl/new  HTTP/1.1
 content-type: application/json
 
 {
-    "url": "https://velayat.me"
+   
 }
 ####
 GET  http://localhost:4002/api/shorturl/6031702b99ff6a8b1f777536  HTTP/1.1

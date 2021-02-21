@@ -2,6 +2,7 @@ require("dotenv").config();
 const express = require("express");
 const cors = require("cors");
 const app = express();
+var dns = require('dns');
 
 var router = require("express").Router();
 
@@ -16,7 +17,7 @@ const bodyParser = require("body-parser");
 
 // Basic Configuration
 const port = process.env.PORT || 3000;
-const url_pattern = /^(https?|ftp|torrent|image|irc):\/\/(-\.)?([^\s\/?\.#-]+\.?)+(\/[^\s]*)?$/i;
+const url_pattern = /((https|http):\/\/)(([^:\n\r]+):([^@\n\r]+)@)?((www\.)?([^/\n\r]+))\/?([^?\n\r]+)?\??([^#\n\r]*)?#?([^\n\r]*)/i;
 
 app.use(cors());
 
@@ -36,13 +37,24 @@ app.get("/api/shorturl/:id", async function (req, res) {
 });
 
 app.post("/api/shorturl/new", async function (req, res) {
-  if (!req.body.url.match(url_pattern)) {
+  
+  if ( !req.body.url || !req.body.url.match(url_pattern) ) {
     res.json({ error: "invalid url" });
     return;
   }
   var exist = await checkExists(req.body.url);
   if (exist) res.json({ shorturl: exist._id });
   else {
+          console.log('req.body.url',req.body.url);
+
+
+    dns.lookup('w3schools.com', function (err, addresses, family) {
+      console.log('addresses',addresses);
+      console.log('family',family);
+
+      if(err){
+        res.json({ error: "invalid url" });
+      }
     var newUrl = new Url({ original_url: req.body.url });
     var data = newUrl.save((err, doc) => {
       if (err) {
@@ -52,6 +64,8 @@ app.post("/api/shorturl/new", async function (req, res) {
       res.json({ original_url: doc.original_url,short_url:doc._id });
       return doc;
     });
+});
+
   }
 });
 
